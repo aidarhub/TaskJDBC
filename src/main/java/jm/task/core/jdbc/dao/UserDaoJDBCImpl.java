@@ -33,7 +33,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         try {
             connection = getConnection();
             statement = connection.createStatement();
-            statement.executeUpdate("DROP TABLE User");
+            statement.executeUpdate("DROP TABLE IF EXISTS User");
         } finally {
             if (statement != null) {
                 statement.close();

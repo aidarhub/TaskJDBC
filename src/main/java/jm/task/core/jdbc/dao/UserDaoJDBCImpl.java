@@ -62,6 +62,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
     public void removeUserById(long id) {
         try {
             connection = getConnection();
+            connection.setAutoCommit(false);
             PreparedStatement statement1 = connection.prepareStatement("SELECT FROM User");
             statement1.setLong(1, id);
             ResultSet resultSet = statement1.executeQuery();
@@ -72,6 +73,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
                 user.setLastName(resultSet.getString(3));
                 user.setAge(resultSet.getByte(4));
             }
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -96,6 +98,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         List<User> userList = new ArrayList<>();
         try {
             connection = getConnection();
+            connection.setAutoCommit(false);
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT * FROM User");
             while (resultSet.next()) {
@@ -105,6 +108,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
                 byte age = resultSet.getByte(4);
                 User user = new User();
                 userList.add(user);
+                connection.commit();
             }
         } finally {
             if (statement != null) {
@@ -120,11 +124,9 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
     public void cleanUsersTable() {
         try {
             connection = getConnection();
-            connection.setAutoCommit(false);
             statement = connection.createStatement();
             String SQL = "DROP TABLE User";
             statement.executeUpdate(SQL);
-            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

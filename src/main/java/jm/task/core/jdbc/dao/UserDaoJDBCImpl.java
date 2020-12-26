@@ -18,7 +18,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         try {
             connection = getConnection();
             statement = connection.createStatement();
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS User (id MEDIUMINT NOT NULL AUTO_INCREMENT, name CHAR(100) NOT NULL, lastName CHAR(100) NOT NULL, age CHAR(10) NOT NULL, PRIMARY KEY (id))");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS User (id MEDIUMINT NOT NULL AUTO_INCREMENT, name CHAR(100) NOT NULL, lastName CHAR(100) NOT NULL, age INT NOT NULL, PRIMARY KEY (id))");
         } finally {
             if (statement != null) {
                 statement.close();

@@ -125,7 +125,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         try {
             connection = getConnection();
             statement = connection.createStatement();
-            String SQL = "DROP TABLE User";
+            String SQL = "TRUNCATE TABLE User";
             statement.executeUpdate(SQL);
         } catch (SQLException e) {
             e.printStackTrace();

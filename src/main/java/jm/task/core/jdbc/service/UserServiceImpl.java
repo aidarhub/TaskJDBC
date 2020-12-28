@@ -11,7 +11,8 @@ import java.util.List;
 public class UserServiceImpl extends Util implements UserService {
     UserDaoJDBCImpl dao = new UserDaoJDBCImpl();
 
-    public UserServiceImpl() {}
+    public UserServiceImpl() {
+    }
 
     public void createUsersTable() throws SQLException {
         dao.createUsersTable();

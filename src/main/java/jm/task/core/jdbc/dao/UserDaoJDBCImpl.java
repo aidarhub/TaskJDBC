@@ -18,7 +18,12 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         try {
             connection = getConnection();
             statement = connection.createStatement();
+            connection.setAutoCommit(false);
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS User (id MEDIUMINT NOT NULL AUTO_INCREMENT, name CHAR(100) NOT NULL, lastName CHAR(100) NOT NULL, age INT NOT NULL, PRIMARY KEY (id))");
+            connection.commit();
+        } catch (SQLException e) {
+            connection.rollback();
+            e.printStackTrace();
         } finally {
             if (statement != null) {
                 statement.close();
@@ -33,7 +38,12 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         try {
             connection = getConnection();
             statement = connection.createStatement();
+            connection.setAutoCommit(false);
             statement.executeUpdate("DROP TABLE IF EXISTS User");
+            connection.commit();
+        } catch (SQLException e) {
+            connection.rollback();
+            e.printStackTrace();
         } finally {
             if (statement != null) {
                 statement.close();
@@ -48,13 +58,18 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         try {
             connection = getConnection();
             connection.setAutoCommit(false);
-            PreparedStatement pr = connection.prepareStatement("INSERT INTO User(name, lastName, age) VALUES (?, ?, ?)");
+            PreparedStatement pr = connection.prepareStatement("INSERT INTO User (name, lastName, age) VALUES ( ?, ?, ?)");
             pr.setString(1, name);
             pr.setString(2, lastName);
             pr.setByte(3, age);
-            pr.execute();
+            pr.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
             e.printStackTrace();
         }
     }
@@ -63,9 +78,9 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         try {
             connection = getConnection();
             connection.setAutoCommit(false);
-            PreparedStatement statement1 = connection.prepareStatement("SELECT FROM User");
-            statement1.setLong(1, id);
-            ResultSet resultSet = statement1.executeQuery();
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM User WHERE id = ?");
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 User user = new User();
                 user.setId(resultSet.getLong(1));
@@ -75,6 +90,11 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
             }
             connection.commit();
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
             e.printStackTrace();
         } finally {
             if (statement != null) {
@@ -98,18 +118,21 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         List<User> userList = new ArrayList<>();
         try {
             connection = getConnection();
-            connection.setAutoCommit(false);
             statement = connection.createStatement();
+            connection.setAutoCommit(false);
             ResultSet resultSet = statement.executeQuery("SELECT * FROM User");
             while (resultSet.next()) {
-                int id = resultSet.getInt(1);
-                String name = resultSet.getString(2);
-                String lastName = resultSet.getString(3);
-                byte age = resultSet.getByte(4);
                 User user = new User();
+                user.setId(resultSet.getLong("id"));
+                user.setName(resultSet.getString("name"));
+                user.setLastName(resultSet.getString("lastName"));
+                user.setAge(resultSet.getByte("age"));
                 userList.add(user);
                 connection.commit();
             }
+        } catch (SQLException e) {
+            connection.rollback();
+            e.printStackTrace();
         } finally {
             if (statement != null) {
                 statement.close();
@@ -125,9 +148,16 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         try {
             connection = getConnection();
             statement = connection.createStatement();
+            connection.setAutoCommit(false);
             String SQL = "TRUNCATE TABLE User";
             statement.executeUpdate(SQL);
+            connection.commit();
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
             e.printStackTrace();
         } finally {
             if (statement != null) {
